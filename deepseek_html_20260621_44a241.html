@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>俗世奇人 · 刷子李 | 知识卡片（飞书适配）</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4efe7;
+      background-image: radial-gradient(circle at 20% 30%, rgba(180, 160, 130, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      font-family: 'Noto Serif SC', '华文楷体', 'KaiTi', '楷体', '宋体', 'SimSun', 'Georgia', 'Times New Roman', serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      margin: 0;
+      color: #3e3a35;
+    }
+
+    .card-collection {
+      max-width: 750px;
+      width: 100%;
+      background: rgba(252, 249, 243, 0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid #c8b89a;
+      box-shadow: 0 20px 40px rgba(80, 50, 20, 0.12), inset 0 0 0 1px rgba(255, 250, 240, 0.8);
+      border-radius: 32px 32px 28px 28px;
+      padding: 2rem 1.8rem 1.8rem;
+      position: relative;
+    }
+
+    .title-seal {
+      text-align: center;
+      margin-bottom: 2.2rem;
+    }
+
+    .title-seal h1 {
+      font-size: 2.8rem;
+      font-weight: 600;
+      letter-spacing: 4px;
+      color: #4b3b2b;
+      text-shadow: 2px 2px 0 rgba(200, 170, 120, 0.3);
+      display: inline-block;
+      padding: 0.3rem 2.2rem;
+      border-top: 2px solid #b59b7a;
+      border-bottom: 2px solid #b59b7a;
+      background: linear-gradient(180deg, rgba(235, 220, 195, 0.4) 0%, rgba(245, 235, 215, 0.2) 90%);
+      border-radius: 60px;
+      font-family: 'Noto Serif SC', '华文楷体', 'KaiTi', serif;
+    }
+
+    .author-tag {
+      display: block;
+      margin-top: 0.4rem;
+      font-size: 1rem;
+      color: #7b6e5a;
+      letter-spacing: 2px;
+      font-style: italic;
+    }
+
+    .cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.6rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .card {
+      background: #fffcf5;
+      border: 1px solid #dacdb8;
+      border-radius: 24px;
+      padding: 1.2rem 1.4rem;
+      box-shadow: 0 6px 14px rgba(120, 90, 50, 0.08);
+      transition: transform 0.2s, box-shadow 0.25s;
+      position: relative;
+      overflow: visible;
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 22px rgba(100, 70, 30, 0.13);
+      transform: translateY(-2px);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      opacity: 0.15;
+      background: radial-gradient(circle, #9e7a5c 2px, transparent 4px);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px dashed #cdbc9f;
+      padding-bottom: 0.6rem;
+    }
+
+    .card-header i {
+      font-size: 1.4rem;
+      color: #b2905a;
+      font-style: normal;
+    }
+
+    .card-header h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #4d3b26;
+      letter-spacing: 1px;
+    }
+
+    .word-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem 1.2rem;
+      align-items: center;
+    }
+
+    .word-item {
+      background: #f7f0e3;
+      border-radius: 30px;
+      padding: 0.3rem 1rem 0.3rem 0.9rem;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border: 1px solid #dbc2a0;
+      color: #3f3324;
+      cursor: default;
+      transition: background 0.2s;
+    }
+
+    .word-item:hover {
+      background: #eedcc6;
+    }
+
+    .char-big {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #5b3f28;
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: #7f6e56;
+      margin-left: 0.2rem;
+      font-style: italic;
+    }
+
+    .highlight-box {
+      background: #fdf8f0;
+      border: 1px solid #ddcbb1;
+      border-radius: 18px;
+      padding: 0.9rem;
+      margin: 0.6rem 0 0.2rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #4c3e2c;
+    }
+
+    .quote {
+      font-style: italic;
+      color: #6a5540;
+      border-left: 3px solid #b49464;
+      padding-left: 0.8rem;
+      margin: 0.6rem 0;
+    }
+
+    /* ---------- 纯CSS交互：心理阶段切换 (radio) ---------- */
+    .plot-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .plot-radio {
+      display: none;
+    }
+
+    .plot-label {
+      background: #f5ede1;
+      border-radius: 20px;
+      padding: 0.5rem 0.9rem;
+      text-align: center;
+      border: 1px solid #dac2a0;
+      font-weight: 500;
+      transition: all 0.2s;
+      cursor: pointer;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+
+    .plot-label:hover {
+      background: #e3d0b6;
+      border-color: #b29262;
+    }
+
+    /* 选中状态 */
+    #stage0:checked ~ .plot-tabs .label0,
+    #stage1:checked ~ .plot-tabs .label1,
+    #stage2:checked ~ .plot-tabs .label2,
+    #stage3:checked ~ .plot-tabs .label3 {
+      background: #c7af8b;
+      color: #fff9f0;
+      border-color: #8b6f50;
+      box-shadow: 0 4px 8px rgba(120, 80, 30, 0.25);
+    }
+
+    .desc-container {
+      margin-top: 0.6rem;
+    }
+
+    .desc-item {
+      display: none;
+      background: #faf6ed;
+      padding: 0.7rem 1rem;
+      border-radius: 16px;
+      color: #4f3e2b;
+      border-left: 4px solid #b2905a;
+      font-size: 0.95rem;
+    }
+
+    #stage0:checked ~ .desc-container .desc0,
+    #stage1:checked ~ .desc-container .desc1,
+    #stage2:checked ~ .desc-container .desc2,
+    #stage3:checked ~ .desc-container .desc3 {
+      display: block;
+    }
+
+    /* 默认显示提示 */
+    .desc-default {
+      display: block;
+      color: #7b6e5a;
+      font-style: italic;
+    }
+
+    #stage0:checked ~ .desc-container .desc-default,
+    #stage1:checked ~ .desc-container .desc-default,
+    #stage2:checked ~ .desc-container .desc-default,
+    #stage3:checked ~ .desc-container .desc-default {
+      display: none;
+    }
+
+    /* ---------- 详情展开 (details/summary) ---------- */
+    .fun-details {
+      margin-top: 0.6rem;
+      background: #f7f0e3;
+      border-radius: 18px;
+      padding: 0.6rem 1rem;
+      border: 1px solid #dbc2a0;
+    }
+
+    .fun-details summary {
+      font-weight: 600;
+      color: #5e462b;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .fun-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .fun-details summary::before {
+      content: "▸";
+      display: inline-block;
+      transition: transform 0.2s;
+      font-size: 1rem;
+      margin-right: 0.2rem;
+      color: #b2905a;
+    }
+
+    .fun-details[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .detail-content {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      color: #4c3e2c;
+      background: #fffcf5;
+      padding: 0.6rem;
+      border-radius: 14px;
+    }
+
+    /* ---------- 自检清单计数器 (纯CSS) ---------- */
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      counter-reset: checked-count;
+    }
+
+    .checklist label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #faf5ed;
+      border-radius: 20px;
+      padding: 0.4rem 1rem;
+      cursor: pointer;
+      border: 1px solid #dbc2a0;
+    }
+
+    .checklist input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.1rem;
+      height: 1.1rem;
+      border: 1px solid #b49464;
+      border-radius: 6px;
+      background: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+      flex-shrink: 0;
+    }
+
+    .checklist input[type="checkbox"]:checked {
+      background: #b2905a;
+      border-color: #8b6f50;
+    }
+
+    .checklist input[type="checkbox"]:checked::after {
+      content: "✓";
+      color: white;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    /* 每个勾选增加计数器 */
+    .checklist input[type="checkbox"]:checked {
+      counter-increment: checked-count;
+    }
+
+    .check-counter {
+      margin-top: 0.6rem;
+      font-size: 0.9rem;
+      color: #6a5a44;
+    }
+
+    .check-counter::after {
+      content: counter(checked-count) "/5 项已完成";
+    }
+
+    /* 初始显示0 */
+    .checklist {
+      counter-reset: checked-count 0;
+    }
+
+    .btn-like {
+      display: inline-block;
+      background: #bfa27b;
+      color: #fffaf2;
+      border-radius: 30px;
+      padding: 0.5rem 1.2rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid #8b6a46;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-like:hover {
+      background: #ab8b64;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px dashed #cfbc9c;
+      margin: 1rem 0 0.6rem;
+    }
+
+    @media (max-width: 500px) {
+      .card-collection {
+        padding: 1.5rem 1rem;
+      }
+      .title-seal h1 {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="card-collection">
+  <div class="title-seal">
+    <h1>刷子李</h1>
+    <span class="author-tag">冯骥才 ·《俗世奇人》</span>
+  </div>
+
+  <div class="cards-grid">
+    
+    <!-- 卡片1：基础信息 + 字词 -->
+    <div class="card">
+      <div class="card-header">
+        <i>📜</i><h2>天津卫 · 奇人规矩</h2>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 500;">黑衣黑裤 · 绝无白点</div>
+        <div class="word-grid" style="margin-top: 0.4rem;">
+          <span class="word-item"><span class="char-big">浆</span><span class="note">粉浆</span></span>
+          <span class="word-item"><span class="char-big">傅</span><span class="note">师傅</span></span>
+          <span class="word-item"><span class="char-big">袱</span><span class="note">包袱</span></span>
+          <span class="word-item"><span class="char-big">馅</span><span class="note">露馅</span></span>
+          <span class="word-item"><span class="char-big">堪</span><span class="note">不堪</span></span>
+          <span class="word-item"><span class="char-big">怔</span><span class="note">发怔</span></span>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top: 0.8rem; background: #f8f2e7;">
+        <span style="font-weight:700;">天衣无缝</span>：完美无缺。 
+        <span style="margin-left:1rem; font-weight:700;">匀匀实实</span>：均匀实在。 
+        <span style="margin-left:1rem; font-weight:700;">派头十足</span>：气派风度。
+      </div>
+    </div>
+
+    <!-- 卡片2：情节互动（纯CSS切换） -->
+    <div class="card">
+      <div class="card-header">
+        <i>🎭</i><h2>曹小三心理 · 一波三折</h2>
+      </div>
+
+      <!-- 隐藏的radio控制 -->
+      <input type="radio" name="plot-stage" id="stage0" class="plot-radio">
+      <input type="radio" name="plot-stage" id="stage1" class="plot-radio">
+      <input type="radio" name="plot-stage" id="stage2" class="plot-radio">
+      <input type="radio" name="plot-stage" id="stage3" class="plot-radio">
+
+      <div class="plot-tabs">
+        <label for="stage0" class="plot-label label0">🤔 半信半疑</label>
+        <label for="stage1" class="plot-label label1">🙏 五体投地</label>
+        <label for="stage2" class="plot-label label2">💔 如山崩塌</label>
+        <label for="stage3" class="plot-label label3">😮 发怔发傻</label>
+      </div>
+
+      <div class="desc-container">
+        <div class="desc-default">👆 点击上方阶段，查看曹小三的心理变化</div>
+        <div class="desc-item desc0">半信半疑：听说师傅刷浆必穿黑，身上绝无白点，心里并不全信。</div>
+        <div class="desc-item desc1">五体投地：师傅刷墙动作悠然，效果雪白，曹小三觉得神了。</div>
+        <div class="desc-item desc2">如山崩塌：突然发现师傅裤子上一个黄豆大小的白点，偶像形象摇摇欲坠。</div>
+        <div class="desc-item desc3">发怔发傻：师傅掐裤子，白点破灭，原是烟洞透出白衬裤，曹小三彻底愣住。</div>
+      </div>
+      <div style="font-size:0.8rem; color:#7a6850; margin-top:0.5rem;">暗线贯穿全文 · 侧面烘托</div>
+    </div>
+
+    <!-- 卡片3：描写手法 + 可展开赏析 -->
+    <div class="card">
+      <div class="card-header">
+        <i>✍️</i><h2>描写手法 · 正面与侧面</h2>
+      </div>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <div style="flex: 1 1 200px;">
+          <div style="font-weight:700; color:#5e462b;">▪ 正面描写</div>
+          <div class="quote">“悠然摆来，悠然摆去……啪地清脆一响。”</div>
+          <div style="font-size:0.9rem; margin-top: 0.3rem;">动作如艺术，直接展现技艺纯熟。</div>
+        </div>
+        <div style="flex: 1 1 200px;">
+          <div style="font-weight:700; color:#5e462b;">▪ 侧面烘托</div>
+          <div class="quote">“如同雪白的屏障……白得透亮。”</div>
+          <div style="font-size:0.9rem;">通过曹小三的反应和环境，反衬刷子李之奇。</div>
+        </div>
+      </div>
+
+      <details class="fun-details">
+        <summary>🔍 完整赏析与答题格式</summary>
+        <div class="detail-content">
+          <strong>答题格式：</strong>通过对曹小三的心理/神态描写，侧面烘托出刷子李技艺高超、自信威严的形象。白点破洞情节更显“真本事是真道理”。
+        </div>
+      </details>
+    </div>
+
+    <!-- 卡片4：核心三奇 + 可展开真相 -->
+    <div class="card">
+      <div class="card-header">
+        <i>🏮</i><h2>刷子李“三奇”</h2>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+        <span class="word-item" style="font-size:1rem;">📏 规矩奇 · 黑衣无白</span>
+        <span class="word-item" style="font-size:1rem;">🖌️ 动作奇 · 悠然如舞</span>
+        <span class="word-item" style="font-size:1rem;">✨ 效果奇 · 雪白屏障</span>
+      </div>
+
+      <details class="fun-details" style="margin-top:1rem;">
+        <summary>🧥 白点真相</summary>
+        <div class="detail-content">
+          “白点”原是抽烟烧的小洞，里面的白衬裤透了出来！刷子李借此给徒弟上了生动一课。
+        </div>
+      </details>
+
+      <div style="font-size:0.9rem; margin-top:0.6rem; color:#5b4b35;">
+        💬 刷子李：“穿上这身黑，就是要跟那些白点较劲。”
+      </div>
+    </div>
+
+    <!-- 卡片5：自检清单（纯CSS计数） -->
+    <div class="card">
+      <div class="card-header">
+        <i>✅</i><h2>复习自检清单</h2>
+      </div>
+      <div class="checklist">
+        <label>
+          <input type="checkbox"> 正确书写“浆、傅、袱、馅、堪”
+        </label>
+        <label>
+          <input type="checkbox"> 解释“天衣无缝”“匀匀实实”
+        </label>
+        <label>
+          <input type="checkbox"> 概括刷子李的“三奇”
+        </label>
+        <label>
+          <input type="checkbox"> 找出1-2句动作描写并赏析
+        </label>
+        <label>
+          <input type="checkbox"> 梳理曹小三心理变化线
+        </label>
+      </div>
+      <div class="check-counter"></div>
+    </div>
+  </div>
+
+  <div style="text-align: right; font-size: 0.8rem; color: #b6a388; margin-top: 0.4rem;">
+    手艺道上 · 奇人绝活
+  </div>
+</div>
+</body>
+</html>
